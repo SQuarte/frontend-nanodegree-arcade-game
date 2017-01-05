@@ -1,4 +1,4 @@
-var MAXIMUM_SPEED = 300;
+var MAXIMUM_SPEED = 500;
 var MINIMUM_SPEED = 100;
 
 var ENEMY_NUMBER = 4;
@@ -6,11 +6,11 @@ var ENEMY_NUMBER = 4;
 var gameInfo = {
         colNumber : 6,
         rowNumber : 6,
-        gridCellSize : 101,
+        gridCellWidth : 101,
+        gridCellHeight : 83
  };
- gameInfo.canvasWidth = gameInfo.colNumber * gameInfo.gridCellSize;
- gameInfo.canvasHeight = gameInfo.rowNumber * gameInfo.gridCellSize;
-
+ gameInfo.canvasWidth = gameInfo.colNumber * gameInfo.gridCellWidth;
+ gameInfo.canvasHeight = 60  + gameInfo.gridCellHeight * gameInfo.rowNumber;
 
 // Enemies our player must avoid
 var Enemy = function(initColumn) {
@@ -19,12 +19,12 @@ var Enemy = function(initColumn) {
 
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
-
-    this.x = Math.random() * gameInfo.canvasWidth;
     if (initColumn === undefined || !Number.isInteger(initColumn)){
     	initColumn = Math.floor(Math.random() * (gameInfo.rowNumber - 3));
     }
-    this.y = 60 + 83 * initColumn;
+
+    this.x = Math.random() * gameInfo.canvasWidth;;
+	this.y = 60 + gameInfo.gridCellHeight * initColumn;
   	this.speed = Math.random() * (MAXIMUM_SPEED - MINIMUM_SPEED) + MINIMUM_SPEED;
     this.sprite = 'images/enemy-bug.png';
 };
@@ -37,7 +37,7 @@ Enemy.prototype.update = function(dt) {
     // all computers.
     this.x += this.speed * dt;
     if (this.x > gameInfo.canvasWidth * 2) {
-    	this.x = -101;
+    	this.x = -gameInfo.gridCellWidth;
     }
 };
 
@@ -51,14 +51,29 @@ Enemy.prototype.render = function() {
 // a handleInput() method.
 var Player = function() {
 	this.sprite = 'images/char-boy.png';
+	this.x = Math.round(gameInfo.colNumber / 2) * gameInfo.gridCellWidth ;
+	this.y = 60 + gameInfo.gridCellHeight * (gameInfo.rowNumber - 2);
 }
 
 Player.prototype.render = function () {
 	ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 }
 
-Player.prototype.handleInput = function () {
+Player.prototype.handleInput = function (key) {
+	var dirX = 0,dirY = 0;
+	switch (key) {
+		case 'left': dirX = -gameInfo.gridCellWidth; break;
+		case 'right': dirX = gameInfo.gridCellWidth; break;
+		case 'up': dirY = -gameInfo.gridCellHeight; break;
+		case 'down': dirY = gameInfo.gridCellHeight; break;
+	}
 
+	if ((this.x + dirX) >= 0 && (this.x + dirX) < gameInfo.canvasWidth){
+		this.x += dirX;
+	} 
+	if ((this.y + dirY) >= 0 && (this.y + dirY) < (gameInfo.canvasHeight - gameInfo.gridCellHeight)){
+		this.y += dirY;
+	} 
 }
 
 Player.prototype.update = function() {
@@ -66,9 +81,29 @@ Player.prototype.update = function() {
 
 
 Player.prototype.render = function() {
+	if (this.checkCollision()){
+		this.resetPosition();
+	}
 	ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 }
 
+Player.prototype.checkCollision = function() {
+	for (var i = 0; i < allEnemies.length; i++){
+		var enemy = allEnemies[i];
+		if (this.x < enemy.x + 80 &&
+			this.x + 80 > enemy.x &&
+			this.y < enemy.y + 80 &&
+			this.y + 80 > enemy.y ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+Player.prototype.resetPosition = function() {
+	this.x = Math.round(gameInfo.colNumber / 2) * gameInfo.gridCellWidth ;
+	this.y = 60 + gameInfo.gridCellHeight * (gameInfo.rowNumber - 2);
+}
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
