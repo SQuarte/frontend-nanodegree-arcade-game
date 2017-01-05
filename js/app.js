@@ -1,10 +1,31 @@
+var MAXIMUM_SPEED = 300;
+var MINIMUM_SPEED = 100;
+
+var ENEMY_NUMBER = 4;
+
+var gameInfo = {
+        colNumber : 6,
+        rowNumber : 6,
+        gridCellSize : 101,
+ };
+ gameInfo.canvasWidth = gameInfo.colNumber * gameInfo.gridCellSize;
+ gameInfo.canvasHeight = gameInfo.rowNumber * gameInfo.gridCellSize;
+
+
 // Enemies our player must avoid
-var Enemy = function() {
+var Enemy = function(initColumn) {
     // Variables applied to each of our instances go here,
     // we've provided one for you to get started
 
     // The image/sprite for our enemies, this uses
     // a helper we've provided to easily load images
+
+    this.x = Math.random() * gameInfo.canvasWidth;
+    if (initColumn === undefined || !Number.isInteger(initColumn)){
+    	initColumn = Math.floor(Math.random() * (gameInfo.rowNumber - 3));
+    }
+    this.y = 60 + 83 * initColumn;
+  	this.speed = Math.random() * (MAXIMUM_SPEED - MINIMUM_SPEED) + MINIMUM_SPEED;
     this.sprite = 'images/enemy-bug.png';
 };
 
@@ -14,6 +35,10 @@ Enemy.prototype.update = function(dt) {
     // You should multiply any movement by the dt parameter
     // which will ensure the game runs at the same speed for
     // all computers.
+    this.x += this.speed * dt;
+    if (this.x > gameInfo.canvasWidth * 2) {
+    	this.x = -101;
+    }
 };
 
 // Draw the enemy on the screen, required method for game
@@ -24,11 +49,45 @@ Enemy.prototype.render = function() {
 // Now write your own player class
 // This class requires an update(), render() and
 // a handleInput() method.
+var Player = function() {
+	this.sprite = 'images/char-boy.png';
+}
+
+Player.prototype.render = function () {
+	ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+}
+
+Player.prototype.handleInput = function () {
+
+}
+
+Player.prototype.update = function() {
+}
+
+
+Player.prototype.render = function() {
+	ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+}
 
 
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
+
+var allEnemies;
+var player;
+
+(function initGameObjects(){
+	allEnemies = [];
+	for (var i = 0; i < 3; i++){
+		allEnemies.push(new Enemy(i));
+	}
+	for (var i = 0; i < ENEMY_NUMBER -3; i++){
+		allEnemies.push(new Enemy());
+	}
+	player = new Player();
+})();
+
 
 
 
