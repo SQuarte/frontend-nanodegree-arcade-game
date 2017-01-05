@@ -23,7 +23,8 @@ var Engine = (function(global) {
         win = global.window,
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
-        lastTime;
+        lastTime,
+        tick = 0;
 
     canvas.width = gameInfo.canvasWidth;
     canvas.height = gameInfo.canvasHeight;
@@ -46,7 +47,8 @@ var Engine = (function(global) {
         /* Call our update/render functions, pass along the time delta to
          * our update function since it may be used for smooth animation.
          */
-        update(dt);
+        tick++;
+        update(dt,tick);
         render();
 
         /* Set our lastTime variable which is used to determine the time delta
@@ -79,9 +81,11 @@ var Engine = (function(global) {
      * functionality this way (you could just implement collision detection
      * on the entities themselves within your app.js file).
      */
-    function update(dt) {
-        updateEntities(dt);
-        // checkCollisions();
+    function update(dt,tick) {
+        if (tick % 300 === 0){
+            allBonuses.push(new Bonus(tick));
+        }
+        updateEntities(dt,tick);
     }
 
     /* This is called by the update function and loops through all of the
@@ -91,10 +95,13 @@ var Engine = (function(global) {
      * the data/properties related to the object. Do your drawing in your
      * render methods.
      */
-    function updateEntities(dt) {
+    function updateEntities(dt,tick) {
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
+        allBonuses.forEach(function(bonus) {
+            bonus.update(dt,tick);
+        })
         player.update();
     }
 
@@ -150,8 +157,13 @@ var Engine = (function(global) {
             enemy.render();
         });
 
+        allBonuses.forEach(function(bonus) {
+            bonus.render();
+        })
+
         player.render();
     }
+
 
     /* This function does nothing but it could have been a good place to
      * handle game reset states - maybe a new game menu or a game over screen
@@ -170,7 +182,8 @@ var Engine = (function(global) {
         'images/water-block.png',
         'images/grass-block.png',
         'images/enemy-bug.png',
-        'images/char-boy.png'
+        'images/char-boy.png',
+        'images/gem-orange.png'
     ]);
     Resources.onReady(init);
 

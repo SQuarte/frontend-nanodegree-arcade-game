@@ -82,18 +82,18 @@ Player.prototype.handleInput = function (key) {
 }
 
 Player.prototype.update = function() {
+	if (this.checkEnemyCollision()){
+		downScore(2);
+		this.resetPosition();
+	}
 }
 
 
 Player.prototype.render = function() {
-	if (this.checkCollision()){
-		downScore(2);
-		this.resetPosition();
-	}
 	ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 }
 
-Player.prototype.checkCollision = function() {
+Player.prototype.checkEnemyCollision = function() {
 	for (var i = 0; i < allEnemies.length; i++){
 		var enemy = allEnemies[i];
 		if (this.x < enemy.x + 80 &&
@@ -106,22 +106,86 @@ Player.prototype.checkCollision = function() {
 	return false;
 }
 
+Player.prototype.checkBonusCollision = function() {
+	for (var i = 0; i < allBonuses.length; i++){
+		var bonus = allBonuses[i];
+		if (this.x < bonus.x + 80 &&
+			this.x + 80 > bonus.x &&
+			this.y < bonus.y + 80 &&
+			this.y + 80 > bonus.y ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+
 Player.prototype.resetPosition = function() {
 	this.x = Math.round(gameInfo.colNumber / 2) * gameInfo.gridCellWidth ;
 	this.y = 60 + gameInfo.gridCellHeight * (gameInfo.rowNumber - 2);
 }
 
+
+
+var Bonus = function(createdTick) {
+	this.lifetimeTicks = 200;
+	this.createdTick = createdTick;
+	this.x = Math.floor(Math.random() * gameInfo.colNumber) * 101;
+	this.y = 60 + gameInfo.gridCellHeight * Math.floor(Math.random() * (gameInfo.rowNumber - 3));;
+	this.sprite = 'images/gem-orange.png';
+}
+
+Bonus.prototype.render = function () {
+	ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+}
+
+Bonus.prototype.update = function (dt,tick) {
+	var bonusIndex;
+	var bonus = this;
+	if (this.checkPlayerCollision()){
+		upScore(2);
+		removeBonus(bonus)
+	} else if (!this.checkIsAlive(tick)){
+		removeBonus(bonus);
+	}
+}
+
+Bonus.prototype.checkPlayerCollision = function() {
+		if (this.x < player.x + 80 &&
+			this.x + 80 > player.x &&
+			this.y < player.y + 80 &&
+			this.y + 80 > player.y ) {
+			return true;
+		} else {
+			return false;
+		}
+}
+
+
+Bonus.prototype.checkIsAlive = function(currentTick) {
+	return this.createdTick + this.lifetimeTicks > currentTick;
+}
+
+
+function removeBonus(bonus) {
+		var bonusIndex = allBonuses.findIndex(function(item) {
+			return item == bonus;
+		})
+		allBonuses.splice(bonusIndex,1);
+}
 // Now instantiate your objects.
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
 
 var allEnemies;
+var allBonuses;
 var player;
 
 
 
 (function initGameObjects(){
 	allEnemies = [];
+	allBonuses = [new Bonus(0)];
 	for (var i = 0; i < 3; i++){
 		allEnemies.push(new Enemy(i));
 	}
