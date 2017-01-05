@@ -11,7 +11,9 @@ var gameInfo = {
  };
  gameInfo.canvasWidth = gameInfo.colNumber * gameInfo.gridCellWidth;
  gameInfo.canvasHeight = 60  + gameInfo.gridCellHeight * gameInfo.rowNumber;
-
+/*ctx.font = "30px Arial";
+ctx.fillText("Hello World",10,50)
+*/
 // Enemies our player must avoid
 var Enemy = function(initColumn) {
     // Variables applied to each of our instances go here,
@@ -73,7 +75,10 @@ Player.prototype.handleInput = function (key) {
 	} 
 	if ((this.y + dirY) >= 0 && (this.y + dirY) < (gameInfo.canvasHeight - gameInfo.gridCellHeight)){
 		this.y += dirY;
-	} 
+	} else if((this.y + dirY) < 0) {
+		upScore(1);
+		this.resetPosition();
+	}
 }
 
 Player.prototype.update = function() {
@@ -82,6 +87,7 @@ Player.prototype.update = function() {
 
 Player.prototype.render = function() {
 	if (this.checkCollision()){
+		downScore(2);
 		this.resetPosition();
 	}
 	ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
@@ -112,6 +118,8 @@ Player.prototype.resetPosition = function() {
 var allEnemies;
 var player;
 
+
+
 (function initGameObjects(){
 	allEnemies = [];
 	for (var i = 0; i < 3; i++){
@@ -138,3 +146,19 @@ document.addEventListener('keyup', function(e) {
 
     player.handleInput(allowedKeys[e.keyCode]);
 });
+
+var gameScore = 0;
+function upScore(step){
+	if (step === undefined || !Number.isInteger(step)){
+		step = 1;
+	}
+	gameScore+= step;
+}
+
+function downScore(step){
+	if (step === undefined || !Number.isInteger(step)){
+		step = 1;
+	}
+	gameScore-= step;
+
+}

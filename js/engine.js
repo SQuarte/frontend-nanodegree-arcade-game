@@ -131,6 +131,9 @@ var Engine = (function(global) {
                 ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
             }
         }
+        ctx.font = "30px Arial";
+        ctx.clearRect(10,20,gameInfo.canvasWidth,30);
+        ctx.fillText("Score:" + gameScore,10,50)
 
         renderEntities();
     }
