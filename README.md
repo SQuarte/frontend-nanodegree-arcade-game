@@ -1,6 +1,20 @@
-frontend-nanodegree-arcade-game
-===============================
+# Frogger game clone
+This game written for udacity frontend nanodegree.This is a clone of popular arcade game called Frogger.
+In this version you should avoid bugs,pick up bonuses and finally go to the water.
 
-Students should use this [rubric](https://review.udacity.com/#!/projects/2696458597/rubric) for self-checking their submission. Make sure the functions you write are **object-oriented** - either class functions (like Player and Enemy) or class prototype functions such as Enemy.prototype.checkCollisions, and that the keyword 'this' is used appropriately within your class and class prototype functions to refer to the object the function is called upon. Also be sure that the **readme.md** file is updated with your instructions on both how to 1. Run and 2. Play your arcade game.
+## Instalation
+Just clone the GitHub repository and open index.html in your favorite browser.
 
-For detailed instructions on how to get started, check out this [guide](https://docs.google.com/document/d/1v01aScPjSWCCWQLIpFqvg3-vXLH2e8_SZQKC8jNO0Dc/pub?embedded=true).
+## Usage/Game control
+Use WASD to move character across the field.
+You can pick up bonuses.
+There are 3 type of bonuses:
+* Green bonus: Slowly disappear, 1 point
+* Blue bonus: Fast disappear, 2 points
+* Orange bonus: Very fast disappear, 5 points
+
+## License
+
+This game is a public domain work, dedicated using
+[CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/). Feel free to do
+whatever you want with it.
