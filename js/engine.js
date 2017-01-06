@@ -82,8 +82,8 @@ var Engine = (function(global) {
      * on the entities themselves within your app.js file).
      */
     function update(dt,tick) {
-        if (tick % 300 === 0){
-            allBonuses.push(new Bonus(tick));
+        if (tick % 250 === 0){
+            allBonuses.push(createRandomBonus(tick));
         }
         updateEntities(dt,tick);
     }
@@ -135,7 +135,7 @@ var Engine = (function(global) {
                  * so that we get the benefits of caching these images, since
                  * we're using them over and over.
                  */
-                ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
+                ctx.drawImage(Resources.get(rowImages[row]), col * gameInfo.gridCellWidth, row * gameInfo.gridCellHeight);
             }
         }
         ctx.font = "30px Arial";
@@ -183,7 +183,9 @@ var Engine = (function(global) {
         'images/grass-block.png',
         'images/enemy-bug.png',
         'images/char-boy.png',
-        'images/gem-orange.png'
+        'images/gem-orange.png',
+        'images/gem-blue.png',
+        'images/gem-green.png'
     ]);
     Resources.onReady(init);
 

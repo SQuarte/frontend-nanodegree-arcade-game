@@ -128,7 +128,6 @@ Player.prototype.resetPosition = function() {
 
 
 var Bonus = function(createdTick) {
-	this.lifetimeTicks = 200;
 	this.createdTick = createdTick;
 	this.x = Math.floor(Math.random() * gameInfo.colNumber) * 101;
 	this.y = 60 + gameInfo.gridCellHeight * Math.floor(Math.random() * (gameInfo.rowNumber - 3));;
@@ -143,7 +142,7 @@ Bonus.prototype.update = function (dt,tick) {
 	var bonusIndex;
 	var bonus = this;
 	if (this.checkPlayerCollision()){
-		upScore(2);
+		upScore(bonus.score);
 		removeBonus(bonus)
 	} else if (!this.checkIsAlive(tick)){
 		removeBonus(bonus);
@@ -177,6 +176,53 @@ function removeBonus(bonus) {
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
 
+
+var WeakBonus = function(createdTick) {
+	Bonus.call(this,createdTick);
+	this.lifetimeTicks = 300;
+	this.score = 1;
+	this.sprite = 'images/gem-green.png';
+}
+
+WeakBonus.prototype = Object.create(Bonus.prototype);
+WeakBonus.prototype.constructor = WeakBonus;
+
+var StrongBonus = function(createdTick) {
+	Bonus.call(this,createdTick);
+	this.lifetimeTicks = 150;
+	this.score = 2;
+	this.sprite = 'images/gem-blue.png';
+}
+
+StrongBonus.prototype = Object.create(Bonus.prototype);
+StrongBonus.prototype.constructor = StrongBonus;
+
+var StrongestBonus = function(createdTick) {
+	Bonus.call(this,createdTick);
+	this.lifetimeTicks = 50;
+	this.score = 5;
+	this.sprite = 'images/gem-orange.png';
+}
+
+StrongestBonus.prototype = Object.create(Bonus.prototype);
+StrongestBonus.prototype.constructor = StrongestBonus;
+
+
+var createRandomBonus = function(createdTick) {
+	var random = Math.floor((Math.random() * 10));
+	console.log(random);
+	if (random < 5) {
+		return new WeakBonus(createdTick);
+	} else if (random > 7) {
+		return new StrongestBonus(createdTick);
+	} else {
+		return new StrongBonus(createdTick);
+	}
+}
+
+
+
+
 var allEnemies;
 var allBonuses;
 var player;
@@ -185,7 +231,7 @@ var player;
 
 (function initGameObjects(){
 	allEnemies = [];
-	allBonuses = [new Bonus(0)];
+	allBonuses = [createRandomBonus(0)];
 	for (var i = 0; i < 3; i++){
 		allEnemies.push(new Enemy(i));
 	}
