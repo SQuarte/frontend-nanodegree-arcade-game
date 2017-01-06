@@ -13,7 +13,6 @@
  * the canvas' context (ctx) object globally available to make writing app.js
  * a little simpler to work with.
  */
-
 var Engine = (function(global) {
     /* Predefine the variables we'll be using within this scope,
      * create the canvas element, grab the 2D context for that canvas
@@ -43,12 +42,11 @@ var Engine = (function(global) {
          */
         var now = Date.now(),
             dt = (now - lastTime) / 1000.0;
-
+        tick++;
         /* Call our update/render functions, pass along the time delta to
          * our update function since it may be used for smooth animation.
          */
-        tick++;
-        update(dt,tick);
+        update(dt, tick);
         render();
 
         /* Set our lastTime variable which is used to determine the time delta
@@ -81,11 +79,12 @@ var Engine = (function(global) {
      * functionality this way (you could just implement collision detection
      * on the entities themselves within your app.js file).
      */
-    function update(dt,tick) {
-        if (tick % 250 === 0){
+    function update(dt, tick) {
+        //Generate new bonus every 250 ticks of game
+        if (tick % 250 === 0) {
             allBonuses.push(createRandomBonus(tick));
         }
-        updateEntities(dt,tick);
+        updateEntities(dt, tick);
     }
 
     /* This is called by the update function and loops through all of the
@@ -95,13 +94,13 @@ var Engine = (function(global) {
      * the data/properties related to the object. Do your drawing in your
      * render methods.
      */
-    function updateEntities(dt,tick) {
+    function updateEntities(dt, tick) {
         allEnemies.forEach(function(enemy) {
             enemy.update(dt);
         });
         allBonuses.forEach(function(bonus) {
-            bonus.update(dt,tick);
-        })
+            bonus.update(dt, tick);
+        });
         player.update();
     }
 
@@ -114,12 +113,14 @@ var Engine = (function(global) {
     function render() {
         /* This array holds the relative URL to the image used
          * for that particular row of the game level.
+         Generate 1 of water blocks, 2 blocks of grass blocks,rest stone blocks
          */
-        var rowImages = ['images/water-block.png'],row, col;
-        for (row = 0; row < gameInfo.rowNumber - 3; row++){
-            rowImages.push( 'images/stone-block.png');
+        var rowImages = ['images/water-block.png'],
+            row, col;
+        for (row = 0; row < gameInfo.rowNumber - 3; row++) {
+            rowImages.push('images/stone-block.png');
         }
-        rowImages.push('images/grass-block.png','images/grass-block.png')
+        rowImages.push('images/grass-block.png', 'images/grass-block.png');
 
 
         /* Loop through the number of rows and columns we've defined above
@@ -138,9 +139,10 @@ var Engine = (function(global) {
                 ctx.drawImage(Resources.get(rowImages[row]), col * gameInfo.gridCellWidth, row * gameInfo.gridCellHeight);
             }
         }
+        //Clear previous score and draw new score
         ctx.font = "30px Arial";
-        ctx.clearRect(10,20,gameInfo.canvasWidth,30);
-        ctx.fillText("Score:" + gameScore,10,50)
+        ctx.clearRect(10, 20, gameInfo.canvasWidth, 30);
+        ctx.fillText("Score:" + gameScore, 10, 50);
 
         renderEntities();
     }
@@ -159,18 +161,9 @@ var Engine = (function(global) {
 
         allBonuses.forEach(function(bonus) {
             bonus.render();
-        })
+        });
 
         player.render();
-    }
-
-
-    /* This function does nothing but it could have been a good place to
-     * handle game reset states - maybe a new game menu or a game over screen
-     * those sorts of things. It's only called once by the init() method.
-     */
-    function reset() {
-        // noop
     }
 
     /* Go ahead and load all of the images we know we're going to need to
